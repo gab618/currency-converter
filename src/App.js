@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import useWindowSize from "react-use/lib/useWindowSize";
 import {
   LineChart,
   XAxis,
@@ -10,10 +11,13 @@ import {
 } from "recharts";
 import api from "./services/api";
 
+import "./styles/app.css";
+
 function App() {
   const [timeseries, setTimeseries] = useState([]);
   const [base, setBase] = useState("USD");
   const [compared, setCompared] = useState("BRL");
+  const { width, height } = useWindowSize();
 
   const options = [
     "USD",
@@ -162,10 +166,21 @@ function App() {
   }
 
   return (
-    <>
-      <LineChart width={800} height={600} data={timeseries}>
+    <div className="container">
+      <h2>Currency Converter</h2>
+      <LineChart
+        width={width - width / 10}
+        height={height - height / 5}
+        data={timeseries}
+        margin={{
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 16,
+        }}
+      >
         <XAxis dataKey="day" />
-        <YAxis />
+        <YAxis domain={["auto", "auto"]} />
         <CartesianGrid strokeDasharray="3 3" />
         <Tooltip />
         <Legend />
@@ -177,21 +192,24 @@ function App() {
           activeDot={{ r: 8 }}
         />
       </LineChart>
-      <select name="base" id="base" onChange={handleSelectBase}>
-        {options.map((option) => (
-          <option key={`b-${option}`} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-      <select name="compared" id="compared" onChange={handleSelectCompared}>
-        {options.map((option) => (
-          <option key={`c-${option}`} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </>
+
+      <div className="select-container">
+        <select name="base" id="base" onChange={handleSelectBase}>
+          {options.map((option) => (
+            <option key={`b-${option}`} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <select name="compared" id="compared" onChange={handleSelectCompared}>
+          {options.map((option) => (
+            <option key={`c-${option}`} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   );
 }
 
