@@ -11,34 +11,46 @@ import {
 import api from "./services/api";
 
 function App() {
-  const [timeseries, setTimeseries] = useState({});
+  const [timeseries, setTimeseries] = useState([]);
 
   useEffect(() => {
     async function getApiData() {
       const response = await api.get(
-        "timeseries?start_date=2020-01-01&end_date=2020-01-04&base=BRL"
+        "timeseries?start_date=2020-11-07&end_date=2020-12-07&base=USD"
       );
-      console.log(response.data);
-      setTimeseries(response.data.rates);
+
+      const formattedData = [];
+
+      for (const day in response.data.rates) {
+        console.log(day);
+        formattedData.push({ day, value: response.data.rates[day] });
+      }
+      console.log(formattedData);
+      setTimeseries(formattedData);
     }
     getApiData();
   }, []);
 
   const data = [
-    { name: "Page A", uv: 10, pv: 20 },
-    { name: "Page B", uv: 20, pv: 40 },
-    { name: "Page A", uv: 30, pv: 60 },
-    { name: "Page A", uv: 5, pv: 10 },
+    { day: "2020-01-01", value: 0.249173 },
+    { day: "2020-01-02", value: 0.250006 },
+    { day: "2020-01-03", value: 0.248687 },
+    { day: "2020-01-04", value: 0.248687 },
   ];
 
   return (
-    <LineChart width={500} height={300} data={data}>
-      <XAxis dataKey="name" />
+    <LineChart width={800} height={500} data={timeseries}>
+      <XAxis dataKey="day" />
       <YAxis />
-      <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+      <CartesianGrid strokeDasharray="3 3" />
+      <Tooltip />
       <Legend />
-      <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-      <Line type="monotone" dataKey="pv" stroke="#82ca9d" />
+      <Line
+        type="monotone"
+        dataKey="value.BRL"
+        stroke="#8884d8"
+        activeDot={{ r: 8 }}
+      />
     </LineChart>
   );
 }

@@ -9,6 +9,6 @@
 
 # Tasks
 
-[x] Fazer o gráfico
-[ ] Fazer funcionar com uma fake response
-[ ] Integrar com a API
+- [x] Fazer o gráfico
+- [ ] Fazer funcionar com uma fake response
+- [ ] Integrar com a API
