@@ -1,3 +1,4 @@
+import { subMonths } from "date-fns/esm";
 import { useEffect, useState } from "react";
 import useWindowSize from "react-use/lib/useWindowSize";
 import {
@@ -17,6 +18,8 @@ function App() {
   const [timeseries, setTimeseries] = useState([]);
   const [base, setBase] = useState("USD");
   const [compared, setCompared] = useState("BRL");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const { width, height } = useWindowSize();
 
   const options = [
@@ -141,22 +144,28 @@ function App() {
   ];
 
   useEffect(() => {
+    const initialDate = new Date();
+    const pastDate = subMonths(initialDate, 1);
+    setEndDate(initialDate.toISOString().slice(0, 10));
+    setStartDate(pastDate.toISOString().slice(0, 10));
+  }, []);
+
+  useEffect(() => {
     async function getApiData() {
       const response = await api.get(
-        `timeseries?start_date=2020-11-07&end_date=2020-12-07&base=${base}`
+        `timeseries?start_date=${startDate}&end_date=${endDate}&base=${base}`
       );
 
       const formattedData = [];
 
       for (const day in response.data.rates) {
-        console.log(day);
         formattedData.push({ day, value: response.data.rates[day] });
       }
       console.log(formattedData);
       setTimeseries(formattedData);
     }
     getApiData();
-  }, [base]);
+  }, [base, endDate, startDate]);
 
   function handleSelectBase(e) {
     setBase(e.target.value);
@@ -167,7 +176,7 @@ function App() {
 
   return (
     <div className="container">
-      <h2>Currency Converter</h2>
+      <h2>Currency Converter Chart</h2>
       <LineChart
         width={width - width / 10}
         height={height - height / 5}
